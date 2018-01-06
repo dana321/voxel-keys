@@ -3,7 +3,6 @@
 var vkey = require('vkey');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
-var toArray = require('toarray');
 
 module.exports = function(game, opts) {
   return new KeysPlugin(game, opts);
@@ -14,7 +13,11 @@ module.exports.pluginInfo = {
 
 function KeysPlugin(game, opts) {
   this.game = game;
-  if (this.game.shell && this.game.shell.bindings) {
+  
+  if (this.game.buttons){
+	  this.getBindingsNames = this.getBindingsNamesKB;
+  }
+  else if (this.game.shell && this.game.shell.bindings) {
     this.getBindingsNames = this.getBindingsNamesGS;
   } else if (this.game.buttons && this.game.buttons.bindings) {
     this.getBindingsNames = this.getBindingsNamesKB;
@@ -68,9 +71,9 @@ KeysPlugin.prototype.getBindingsNamesKB = function(code) {
   var key = vkey[code];
   if (key === undefined) return undefined;
 
-  var bindingName = this.game.buttons.bindings[key];
+  var bindingName = String.fromCharCode(key);
 
-  return toarray(bindingName);
+  return bindingName instanceof Array ? bindingName : [bindingName];
 };
 
 // for game-shell
